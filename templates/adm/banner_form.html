@@ -1,0 +1,93 @@
+{% extends "adm/base.html" %}
+{% block title %}프리미엄 업체 {% if mode == 'create' %}등록{% else %}수정{% endif %}{% endblock %}
+{% block breadcrumbs %}프리미엄 업체 관리 / {% if mode == 'create' %}등록{% else %}수정{% endif %}{% endblock %}
+{% block page_title %}프리미엄 업체 {% if mode == 'create' %}등록{% else %}수정{% endif %}{% endblock %}
+
+{% block content %}
+<div class="cardx" style="max-width:900px;">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="form-rowx">
+      <label class="labelx">업체명</label>
+      {{ form.title }}
+    </div>
+
+    <div class="form-rowx">
+      <label class="labelx">설명</label>
+      {{ form.desc }}
+    </div>
+
+    <div class="form-rowx">
+      <label class="labelx">부가설명</label>
+      {{ form.extra_desc }}
+    </div>
+
+    <div class="form-rowx">
+      <label class="labelx">바로가기 링크</label>
+      {{ form.link_url }}
+    </div>
+
+    <div class="form-rowx">
+      <label class="labelx">연락처</label>
+      {{ form.phone }}
+    </div>
+
+    <div class="form-rowx">
+      <label class="labelx">사업자등록번호</label>
+      {{ form.business_number }}
+    </div>
+
+    <div class="form-rowx">
+      <label class="labelx">통신판매업</label>
+      {{ form.ecommerce_number }}
+    </div>
+
+    <div class="form-rowx">
+      <label class="labelx">등록기관</label>
+      {{ form.agency }}
+    </div>
+
+    <div class="form-rowx">
+      <label class="labelx">영업소</label>
+      {{ form.office_address }}
+    </div>
+
+    {% if form.image %}
+    <div class="form-rowx">
+      <label class="labelx">이미지</label>
+      <div class="field">
+        {% if obj and obj.image %}
+          <div style="margin-bottom:8px;">
+            <img src="{{ obj.image.url }}" style="max-width:240px; border:1px solid #e5e7eb;">
+          </div>
+        {% endif %}
+        {{ form.image }}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if form.bg_color %}
+    <div class="form-rowx">
+      <label class="labelx">배경색</label>
+      <div class="field">{{ form.bg_color }}</div>
+    </div>
+    {% endif %}
+
+    <div class="form-rowx">
+      <label class="labelx">노출 여부</label>
+      <div class="field">{{ form.is_active }}</div>
+    </div>
+
+    <div class="form-rowx">
+      <label class="labelx">정렬 순서</label>
+      {{ form.sort }}
+    </div>
+
+    <div class="btn-rowx">
+      <a class="btnx" href="{% url 'adm_banner_list' %}">목록</a>
+      <button class="btnx primary" type="submit">저장</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

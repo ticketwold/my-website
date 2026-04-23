@@ -1,0 +1,91 @@
+{% extends "site/base_site.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="py-4">
+  <div class="container">
+    <div class="bg-white border rounded-4 p-4 shadow-sm">
+
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h2 class="fw-bold mb-0">{{ page_title }}</h2>
+
+        {% if request.user.is_authenticated %}
+          {% if board_type == "buy" %}
+            <a href="{% url 'board_write' 'buy' %}" class="btn btn-dark">글쓰기</a>
+          {% elif board_type == "sell" %}
+            <a href="{% url 'board_write' 'sell' %}" class="btn btn-dark">글쓰기</a>
+          {% endif %}
+        {% else %}
+          <a href="{% url 'user_login' %}" class="btn btn-outline-dark">로그인 후 글쓰기</a>
+        {% endif %}
+      </div>
+
+      <div class="mb-4 d-flex gap-2 flex-wrap">
+        {% if board_type == "buy" %}
+          <a href="{% url 'buy_board_page' %}" class="btn btn-sm {% if not category %}btn-dark{% else %}btn-outline-dark{% endif %}">전체</a>
+          {% for value, label in category_choices %}
+            <a href="{% url 'buy_board_page' %}?category={{ value }}"
+               class="btn btn-sm {% if category == value %}btn-dark{% else %}btn-outline-dark{% endif %}">
+              {{ label }}
+            </a>
+          {% endfor %}
+
+        {% elif board_type == "sell" %}
+          <a href="{% url 'sell_board_page' %}" class="btn btn-sm {% if not category %}btn-dark{% else %}btn-outline-dark{% endif %}">전체</a>
+          {% for value, label in category_choices %}
+            <a href="{% url 'sell_board_page' %}?category={{ value }}"
+               class="btn btn-sm {% if category == value %}btn-dark{% else %}btn-outline-dark{% endif %}">
+              {{ label }}
+            </a>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      {% if posts %}
+      <div class="table-responsive">
+        <table class="table align-middle board-table mb-0">
+          <thead>
+            <tr>
+              <th style="width:120px;">분류</th>
+              <th>제목</th>
+              <th style="width:140px;">작성자</th>
+              <th style="width:120px;">작성일</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for post in posts %}
+            <tr>
+              <td>
+                <span class="board-category-pill">
+                  {{ post.get_category_display }}
+                </span>
+              </td>
+              <td class="fw-semibold">
+                <a href="{% url 'board_detail' board_type post.id %}" class="text-decoration-none text-dark">
+                  {{ post.title }}
+                </a>
+
+                {% if board_type == "buy" or board_type == "sell" %}
+                <div class="small text-muted mt-1">
+                  {{ post.giftcard_type|default:"상품권 종류 미입력" }}
+                  {% if post.price %}
+                    / {{ post.price }}원
+                  {% endif %}
+                </div>
+                {% endif %}
+              </td>
+              <td>{{ post.author.username|default:"익명" }}</td>
+              <td>{{ post.created_at|date:"y.m.d" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-muted">등록된 게시글이 없습니다.</div>
+      {% endif %}
+
+    </div>
+  </div>
+</section>
+{% endblock %}

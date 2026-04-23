@@ -1,0 +1,80 @@
+{% extends "site/base_site.html" %}
+{% block title %}{{ company.name }}{% endblock %}
+
+{% block content %}
+<section class="py-4 company-detail-page">
+  <div class="container">
+    <div class="detail-wrap">
+
+      <div class="detail-title-box">
+        <h1 class="detail-main-title company-detail-title">{{ company.desc|default:company.name }}</h1>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-section-title company-detail-section-tile">업체정보</div>
+
+        <div class="detail-info-grid">
+
+          <div class="detail-info-row">
+            <div class="detail-label">업체명</div>
+            <div class="detail-value">{{ company.name }}</div>
+          </div>
+          <div class="detail-info-row">
+            <div class="detail-label">연락처</div>
+            <div class="detail-value detail-phone">{{ company.phone|default:"-" }}</div>
+          </div>
+          <div class="detail-info-row">
+            <div class="detail-label">사업자등록번호</div>
+            <div class="detail-value">{{ company.biz_number|default:"-" }}</div>
+          </div>
+          <div class="detail-info-row">
+            <div class="detail-label">통신판매업</div>
+            <div class="detail-value">{{ company.ecommerce_number|default:"-" }}</div>
+          </div>          
+          <div class="detail-info-row">
+            <div class="detail-label">등록기관</div>
+            <div class="detail-value">{{ company.agency_name|default:"-" }}</div>
+          </div>
+          <div class="detail-info-row">
+            <div class="detail-label">영업소</div>
+            <div class="detail-value">{{ company.office_address|default:"-" }}</div>
+          </div>
+        </div>
+
+        <div class="detail-btns">
+            <a href="{% if company.phone %}tel:{{ company.phone }}{% else %}#{% endif %}" class="detail-btn primary">통화하기</a>
+
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'toggle_favorite' company.id %}" class="detail-btn {% if is_favorite %}favorite-on{% else %}line{% endif %}">
+                    {% if is_favorite %}★ 즐겨찾기 해제{% else %}☆ 즐겨찾기 추가{% endif %}
+                </a>
+            {% else %}
+                <a href="{% url 'user_login' %}" class="detail-btn line">로그인 후 즐겨찾기</a>
+            {% endif %}
+
+            {% if company.link_url %}
+                <a href="{{ company.link_url }}" target="_blank" class="detail-btn line">외부 홈페이지</a>
+            {% endif %}
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-section-title">부가설명</div>
+        <div class="detail-content-text">
+          {{ company.detail_content|linebreaksbr|default:"등록된 상세설명이 없습니다." }}
+        </div>
+      </div>
+
+      {% if company.warning_text %}
+      <div class="detail-card">
+        <div class="detail-section-title">주의사항</div>
+        <div class="detail-content-text warning">
+          {{ company.warning_text|linebreaksbr }}
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</section>
+{% endblock %}

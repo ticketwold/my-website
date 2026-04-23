@@ -1,0 +1,48 @@
+{% extends "site/base_site.html" %}
+{% block title %}거래소 등록업체{% endblock %}
+
+{% block content %}
+<section class="py-4">
+  <div class="container">
+
+    <div class="ts-company-head">
+      <div class="ts-company-title-wrap">
+        <h2 class="ts-company-title">거래소 등록업체</h2>
+      </div>
+    </div>
+
+    <div class="ts-company-grid" id="tsCompanyGrid">
+      {% for company in companies %}
+      <div class="ts-company-card is-certified">
+        <div class="ts-company-card-top">
+          <span class="ts-company-badge">TK인증</span>
+
+          <div class="ts-company-name company-name-korean">
+            {{ company.name }}
+          </div>
+        </div>
+
+        <div class="ts-company-card-body">
+          <p class="ts-company-desc">
+            {{ company.desc|default:"등록된 소개가 없습니다." }}
+          </p>
+
+          <div class="ts-company-actions">
+            {% if company.phone %}
+              <a href="tel:{{ company.phone }}" class="ts-company-btn line">문의하기</a>
+            {% else %}
+              <a href="{% url 'company_detail' company.id %}" class="ts-company-btn line">문의하기</a>
+            {% endif %}
+
+            <a href="{% url 'company_detail' company.id %}" class="ts-company-btn fill">상세정보</a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-box">등록된 업체가 없습니다.</div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+{% endblock %}

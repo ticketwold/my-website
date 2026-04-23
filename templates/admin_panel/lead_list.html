@@ -1,0 +1,47 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}상담신청 목록{% endblock %}
+{% block content %}
+<div class="card shadow-sm border-0">
+  <div class="card-body">
+    <form class="row g-2 mb-3" method="get">
+      <div class="col-md-5">
+        <input class="form-control" name="q" value="{{ q }}" placeholder="이름/연락처 검색">
+      </div>
+      <div class="col-md-4">
+        <select class="form-select" name="status">
+          <option value="">전체 상태</option>
+          {% for v, t in status_choices %}
+            <option value="{{ v }}" {% if status == v %}selected{% endif %}>{{ t }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3 d-grid">
+        <button class="btn btn-dark">검색</button>
+      </div>
+    </form>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>시간</th><th>이름</th><th>연락처</th><th>상태</th><th>유입</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for lead in leads %}
+          <tr>
+            <td class="text-muted">{{ lead.created_at|date:"Y-m-d H:i" }}</td>
+            <td><a href="{% url 'admin_lead_detail' lead.id %}">{{ lead.name }}</a></td>
+            <td>{{ lead.phone }}</td>
+            <td><span class="badge bg-secondary">{{ lead.status }}</span></td>
+            <td class="text-muted">{{ lead.utm_source }} / {{ lead.utm_campaign }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5">데이터 없음</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

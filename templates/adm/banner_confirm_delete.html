@@ -1,0 +1,24 @@
+{% extends "adm/base.html" %}
+{% block title %}배너 삭제{% endblock %}
+{% block breadcrumbs %}배너 관리 / 삭제{% endblock %}
+{% block page_title %}배너 삭제{% endblock %}
+
+{% block content %}
+<div class="cardx" style="max-width:720px;">
+  <div class="text-muted" style="margin-bottom:12px;">
+    아래 배너를 삭제할까요?
+  </div>
+
+  <div style="padding:12px; border:1px solid #e5e7eb; border-radius:12px; background:#fff;">
+    <div><b>제목:</b> {{ obj.title }}</div>
+    <div><b>설명:</b> {{ obj.desc|default:"-" }}</div>
+    <div><b>링크:</b> {{ obj.link_url|default:"-" }}</div>
+  </div>
+
+  <form method="post" style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
+    {% csrf_token %}
+    <a class="btnx" href="{% url 'adm_banner_list' %}">취소</a>
+    <button class="btnx danger" type="submit">삭제</button>
+  </form>
+</div>
+{% endblock %}

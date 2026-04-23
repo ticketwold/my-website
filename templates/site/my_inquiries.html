@@ -1,0 +1,21 @@
+{% extends "site/base_site.html" %}
+
+{% block content %}
+<div class="container py-4">
+
+  <h2 class="mb-4">내 문의내역</h2>
+
+  {% for i in inquiries %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">{{ i.title }}</h5>
+        <p class="card-text">{{ i.content }}</p>
+        <small class="text-muted">{{ i.created_at }}</small>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-muted">문의 내역이 없습니다.</p>
+  {% endfor %}
+
+</div>
+{% endblock %}

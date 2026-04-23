@@ -1,0 +1,406 @@
+{% load static %}
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}티켓세상{% endblock %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{% static 'css/site.css' %}" rel="stylesheet">
+</head>
+<body>
+
+<!-- 최상단 유틸바 -->
+<div class="top-util-bar">
+  <div class="container d-flex justify-content-end align-items-center">
+    {% if request.user.is_authenticated %}
+      <span class="top-util-text">{{ request.user.username }}님</span>
+      <a href="{% url 'mypage' %}" class="top-util-link">MY</a>
+      <a href="{% url 'user_logout' %}" class="top-util-link accent">로그아웃</a>
+    {% else %}
+      <span class="top-util-text">로그인이 필요합니다.</span>
+      <a href="{% url 'user_login' %}" class="top-util-link accent">로그인</a>
+      <a href="{% url 'signup' %}" class="top-util-link">회원가입</a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- 로고 / 우측 메뉴 -->
+<header class="brand-header">
+  <div class="container brand-header-inner">
+    <a href="{% url 'site_index' %}" class="brand-logo-wrap">
+      <div class="brand-logo-circle">🎫</div>
+      <div class="brand-logo-text">
+        <div class="brand-name">티켓세상</div>
+        <div class="brand-sub">상품권 거래 플랫폼, 티켓세상</div>
+      </div>
+    </a>
+
+    <nav class="brand-top-links">
+      <a href="{% url 'prices_page' %}">상품권 정보</a>
+      <a href="{% url 'customer_page' %}">고객센터</a>
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'mypage' %}">MY</a>
+      {% else %}
+        <a href="{% url 'user_login' %}">MY</a>
+      {% endif %}
+    </nav>
+
+    <!-- 모바일 햄버거 -->
+    <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="메뉴 열기">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</header>
+
+<!-- 메인 카테고리 바 -->
+<nav class="main-category-bar" id="mobileMainMenu">
+  <div class="container">
+
+    <!-- 모바일 메뉴 상단 -->
+    <div class="mobile-menu-head">
+      <a href="{% url 'site_index' %}" class="mobile-menu-brand">
+        <div class="mobile-menu-brand-icon">🎫</div>
+        <div class="mobile-menu-brand-text">
+          <strong>티켓세상</strong>
+          <span>상품권 중개플랫폼</span>
+        </div>
+      </a>
+
+      <button type="button" class="mobile-menu-close" id="mobileMenuClose" aria-label="메뉴 닫기">✕</button>
+    </div>
+
+    <div class="mobile-menu-util">
+      {% if request.user.is_authenticated %}
+        <span class="mobile-menu-login-text">{{ request.user.username }}님</span>
+        <div class="mobile-menu-auth">
+          <a href="{% url 'mypage' %}" class="mobile-menu-btn active">MY</a>
+          <a href="{% url 'user_logout' %}" class="mobile-menu-btn">로그아웃</a>
+        </div>
+      {% else %}
+        <span class="mobile-menu-login-text">로그인이 필요합니다</span>
+        <div class="mobile-menu-auth">
+          <a href="{% url 'user_login' %}" class="mobile-menu-btn active">로그인</a>
+          <a href="{% url 'signup' %}" class="mobile-menu-btn">회원가입</a>
+        </div>
+      {% endif %}
+    </div>
+
+    <ul class="main-category-list">
+      <li>
+        <a class="{% if active_nav == 'home' %}active{% endif %}" href="{% url 'site_index' %}">
+          메인
+        </a>
+      </li>
+      <li>
+        <a class="{% if active_nav == 'prices' %}active{% endif %}" href="{% url 'prices_page' %}">
+          상품권 시세
+        </a>
+      </li>
+      <li>
+        <a class="{% if active_nav == 'shopping' %}active{% endif %}" href="{% url 'shopping_page' %}">
+          프리미엄 업체
+        </a>
+      </li>
+      <li>
+        <a class="{% if active_nav == 'companies' %}active{% endif %}" href="{% url 'companies_page' %}">
+          거래소 등록업체
+        </a>
+      </li>
+        {% if request.user.is_authenticated and request.user.is_staff %}
+      <li class="ms-auto">
+        <a href="{% url 'adm_dashboard' %}">관리자</a>
+      </li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
+
+<div class="mobile-menu-backdrop" id="mobileMenuBackdrop"></div>
+
+{% block content %}{% endblock %}
+
+{% if request.user.is_authenticated %}
+<div class="side-company-widget" id="sideCompanyWidget">
+  <div class="side-company-widget__top">
+    <span>MY 업체함</span>
+    <button id="widgetToggle" class="widget-toggle">▼</button>
+    <div class="side-company-widget__sub">관심업체 / 최근 확인한 업체</div>
+  </div>
+
+  <div class="side-company-widget__head">
+    <button type="button" class="side-company-tab active" data-target="favorite-panel">즐겨찾기</button>
+    <button type="button" class="side-company-tab" data-target="recent-panel">최근 본 업체</button>
+  </div>
+
+  <div class="side-company-widget__body">
+    <div class="side-company-panel active" id="favorite-panel">
+      {% if side_favorites %}
+        <ul class="side-company-list">
+          {% for item in side_favorites %}
+          <li>
+            <a href="{% url 'company_detail' item.company.id %}" class="side-company-item">
+              <span class="side-company-item__name">{{ item.company.name }}</span>
+              <span class="side-company-item__arrow">›</span>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="side-company-empty">즐겨찾기한 업체가 없습니다.</div>
+      {% endif %}
+    </div>
+
+    <div class="side-company-panel" id="recent-panel">
+      {% if side_recent_companies %}
+        <ul class="side-company-list">
+          {% for item in side_recent_companies %}
+          <li>
+            <a href="{% url 'company_detail' item.company.id %}" class="side-company-item">
+              <span class="side-company-item__name">{{ item.company.name }}</span>
+              <span class="side-company-item__arrow">›</span>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="side-company-empty">최근 본 업체가 없습니다.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="side-company-widget__bottom">
+    <a href="{% url 'mypage' %}" class="side-company-more">마이페이지 바로가기</a>
+  </div>
+</div>
+{% endif %}
+
+<footer class="ts-footer">
+  <div class="ts-shortcut-section">
+    <div class="container">
+      <div class="ts-shortcut-header">
+        <div class="visitor-counter-box">
+          <span class="visitor-label">Today</span>
+          <span class="visitor-value">{{ today_visitors }}</span>
+          <span class="visitor-divider">|</span>
+          <span class="visitor-label">Total</span>
+          <span class="visitor-value">{{ total_visitors }}</span>
+        </div>
+
+        <div class="ts-shortcut-title">
+          <span class="bar"></span>
+          <h3>바로가기</h3>
+        </div>
+
+      </div>
+        <div class="shortcut-grid">
+        <a href="{% url 'site_index' %}#premium-section" class="shortcut-item">
+          <span class="icon">🛒</span>
+          <span class="label">상품권 구매</span>
+        </a>
+
+        <a href="{% url 'site_index' %}#premium-section" class="shortcut-item">
+          <span class="icon">💰</span>
+          <span class="label">상품권 판매</span>
+        </a>
+
+        <a href="{% url 'companies_page' %}" class="shortcut-item">
+          <span class="icon">🏢</span>
+          <span class="label">업체 등록</span>
+        </a>
+
+        <a href="{% url 'customer_page' %}" class="shortcut-item">
+          <span class="icon">📞</span>
+          <span class="label">고객센터</span>
+        </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ts-footer-links">
+    <div class="container">
+      <a href="#">회사소개</a>
+      <span>|</span>
+      <a href="#">이용안내</a>
+      <span>|</span>
+      <a href="#">이용약관</a>
+      <span>|</span>
+      <a href="#">개인정보처리방침</a>
+      <span>|</span>
+      <a href="#">이메일 무단수집거부</a>
+      <span>|</span>
+      <a href="#">문의하기</a>
+    </div>
+  </div>
+
+  <div class="ts-footer-main">
+    <div class="container ts-footer-main-inner">
+      <div class="ts-footer-col customer">
+        <h3>고객센터</h3>
+        <div class="phone">1800-xxxx</div>
+        <p>
+          평일 09:00 ~ 18:00<br>
+          (점심시간 12:00 ~ 13:00)<br>
+          (주말 및 공휴일 휴무)
+        </p>
+      </div>
+
+      <div class="ts-footer-col company">
+        <h3>상품권 중개 플랫폼, 티켓세상</h3>
+        <p>
+          티켓세상은 광고 플랫폼만 제공하며, 직접적인 판매/매입 거래에는 개입하지 않습니다.
+          정식 상품권 매매업 등록 개인 및 법인사업자만 광고 등록이 가능합니다.
+        </p>
+        <p class="meta">
+          사이트명 : 티켓세상 &nbsp;&nbsp; 대표자 : 김다빈<br>
+          주소 : 화성시 동탄구 동탄중심상가 1길 33, 9층<br>
+          사업자등록번호 : 889-04-03859<br>
+          통신판매업신고번호 : 준비중
+        </p>
+      </div>
+
+      <div class="ts-footer-col notice">
+        <h3>안내사항</h3>
+        <p>
+          상품권 구입 및 판매 시 보이스피싱 또는 3자 사기에 각별한 주의가 필요합니다.
+          티켓세상은 플랫폼만 제공할 뿐 상품권 거래 시 발생하는 피해는 본인이 해결하셔야 합니다.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ts-footer-bottom">
+    <div class="container ts-footer-bottom-inner">
+      <a href="{% url 'site_index' %}" class="ts-footer-brand">
+        <div class="ts-footer-brand-icon">🎫</div>
+        <div class="ts-footer-brand-text">
+          <strong>티켓세상</strong>
+          <span>상품권 중개플랫폼</span>
+        </div>
+      </a>
+
+      <div class="ts-footer-copy">
+        Copyright © 2024 티켓세상. All rights reserved.
+      </div>
+    </div>
+  </div>
+
+  <div class="ts-floating-wrap">
+    <button type="button" class="ts-floating-top" onclick="window.scrollTo({top:0, behavior:'smooth'});">
+      ˄
+    </button>
+  </div>
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const tabs = document.querySelectorAll(".side-company-tab");
+  const panels = document.querySelectorAll(".side-company-panel");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", function () {
+      const target = this.dataset.target;
+
+      tabs.forEach(t => t.classList.remove("active"));
+      panels.forEach(p => p.classList.remove("active"));
+
+      this.classList.add("active");
+      document.getElementById(target)?.classList.add("active");
+    });
+  });
+
+  const widget = document.getElementById("sideCompanyWidget");
+  if (!widget) return;
+
+  const baseTop = 220;
+  let ticking = false;
+
+  function updateWidgetPosition() {
+    const scrollY = window.scrollY || window.pageYOffset;
+    const nextTop = baseTop + Math.min(scrollY * 0.18, 180);
+    widget.style.top = `${nextTop}px`;
+    ticking = false;
+  }
+
+  window.addEventListener("scroll", function () {
+    if (!ticking) {
+      window.requestAnimationFrame(updateWidgetPosition);
+      ticking = true;
+    }
+  });
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const widget = document.getElementById("sideCompanyWidget");
+  const btn = document.getElementById("widgetToggle");
+
+  if (!widget || !btn) return;
+
+  const saved = localStorage.getItem("widgetCollapsed");
+
+  if (saved === "true") {
+    widget.classList.add("collapsed");
+    btn.innerText = "▲";
+  } else {
+    btn.innerText = "▼";
+  }
+
+  btn.addEventListener("click", function () {
+    widget.classList.toggle("collapsed");
+
+    const isCollapsed = widget.classList.contains("collapsed");
+    btn.innerText = isCollapsed ? "▲" : "▼";
+
+    localStorage.setItem("widgetCollapsed", isCollapsed);
+  });
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const toggleBtn = document.getElementById("mobileMenuToggle");
+  const closeBtn = document.getElementById("mobileMenuClose");
+  const mobileMenu = document.getElementById("mobileMainMenu");
+  const backdrop = document.getElementById("mobileMenuBackdrop");
+
+  if (!toggleBtn || !mobileMenu || !backdrop) return;
+  function openMenu() {
+    mobileMenu.classList.add("is-open");
+    backdrop.classList.add("is-open");
+    document.body.classList.add("mobile-menu-open");
+  }
+
+  function closeMenu() {
+    mobileMenu.classList.remove("is-open");
+    backdrop.classList.remove("is-open");
+    document.body.classList.remove("mobile-menu-open");
+  }
+
+  toggleBtn.addEventListener("click", openMenu);
+
+  if (closeBtn) {
+    closeBtn.addEventListener("click", closeMenu);
+  }
+
+  backdrop.addEventListener("click", closeMenu);
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  (function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];if(x.parentNode){x.parentNode.insertBefore(s,x);}}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
+
+  ChannelIO('boot', {
+    "pluginKey": "9c3ed7ff-f6ae-48bf-a7cd-705706113f2d"
+  });
+</script>
+</body>
+</html>

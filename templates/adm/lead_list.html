@@ -1,0 +1,67 @@
+{% extends "adm/base.html" %}
+{% block topbar_title %}상담 관리{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">상담 관리</h1>
+      <div class="page-desc">이름/연락처 검색 및 상태 필터</div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:12px;">
+    <div class="panel-head">
+      <div class="panel-title">검색</div>
+    </div>
+    <div style="padding:12px 14px;">
+      <form method="get" class="form-row">
+        <input class="inputx" name="q" value="{{ q }}" placeholder="이름/연락처 검색">
+        <select class="inputx" name="status">
+          <option value="">전체 상태</option>
+          {% for v, t in status_choices %}
+            <option value="{{ v }}" {% if status == v %}selected{% endif %}>{{ t }}</option>
+          {% endfor %}
+        </select>
+        <button class="btnx primary" type="submit">검색</button>
+        <a class="btnx" href="{% url 'adm_lead_list' %}">초기화</a>
+      </form>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-title">목록</div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="tablex">
+        <thead>
+          <tr>
+            <th style="width:170px;">시간</th>
+            <th style="width:140px;">이름</th>
+            <th style="width:180px;">연락처</th>
+            <th>메모</th>
+            <th style="width:120px;">상태</th>
+            <th style="width:110px;">관리</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for l in leads %}
+          <tr>
+            <td>{{ l.created_at|date:"Y-m-d H:i" }}</td>
+            <td>{{ l.name }}</td>
+            <td>{{ l.phone }}</td>
+            <td class="muted" style="text-align:left;">{{ l.memo|default:"-" }}</td>
+            <td><span class="badge">{{ l.get_status_display }}</span></td>
+            <td>
+              <a class="btn-mini" href="{% url 'adm_lead_detail' l.id %}">상세</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" class="muted">데이터가 없습니다.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

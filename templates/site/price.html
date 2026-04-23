@@ -1,0 +1,74 @@
+{% extends "site/base_site.html" %}
+{% block title %}상품권 시세{% endblock %}
+
+{% block content %}
+<section class="py-4">
+  <div class="container">
+    <h2 class="fw-bold mb-4">상품권 시세</h2>
+
+    <div class="row g-3">
+      <div class="col-lg-6">
+        <div class="bg-white border rounded p-3">
+          <div class="fw-bold mb-2">지류(종이) 상품권 시세</div>
+
+          {% if paper_prices %}
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>상품권</th>
+                  <th class="text-end">매입</th>
+                  <th class="text-end">판매</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for p in paper_prices %}
+                <tr>
+                  <td>{{ p.name }}</td>
+                  <td class="text-end">{{ p.buy_rate }}%</td>
+                  <td class="text-end">{{ p.sell_rate }}%</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-muted small">등록된 시세가 없습니다.</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="bg-white border rounded p-3">
+          <div class="fw-bold mb-2">모바일 상품권 시세</div>
+
+          {% if mobile_prices %}
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>상품권</th>
+                  <th class="text-end">매입</th>
+                  <th class="text-end">판매</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for p in mobile_prices %}
+                <tr>
+                  <td>{{ p.name }}</td>
+                  <td class="text-end">{{ p.buy_rate }}%</td>
+                  <td class="text-end">{{ p.sell_rate }}%</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-muted small">등록된 시세가 없습니다.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

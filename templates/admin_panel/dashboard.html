@@ -1,0 +1,46 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}대시보드{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <div class="fw-semibold mb-2">상태별 건수</div>
+        <ul class="list-group list-group-flush">
+          {% for s in stats %}
+            <li class="list-group-item d-flex justify-content-between">
+              <span>{{ s.status }}</span><span class="fw-bold">{{ s.cnt }}</span>
+            </li>
+          {% empty %}
+            <li class="list-group-item">데이터 없음</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <div class="fw-semibold mb-2">최근 10건</div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead><tr><th>시간</th><th>이름</th><th>연락처</th><th>상태</th></tr></thead>
+            <tbody>
+              {% for lead in latest %}
+              <tr>
+                <td class="text-muted">{{ lead.created_at|date:"m/d H:i" }}</td>
+                <td><a href="{% url 'admin_lead_detail' lead.id %}">{{ lead.name }}</a></td>
+                <td>{{ lead.phone }}</td>
+                <td><span class="badge bg-secondary">{{ lead.status }}</span></td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="4">데이터 없음</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

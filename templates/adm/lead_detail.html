@@ -1,0 +1,89 @@
+{% extends "adm/base.html" %}
+{% block topbar_title %}상담 상세{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">상담 상세</h1>
+      <div class="page-desc">상태 변경 / 메모 추가</div>
+    </div>
+    <a class="btnx" href="{% url 'adm_lead_list' %}">목록</a>
+  </div>
+
+  <div class="kpi-grid" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+    <div class="kpi-card">
+      <div class="kpi-label">이름</div>
+      <div class="kpi-value" style="font-size:18px;">{{ lead.name }}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">연락처</div>
+      <div class="kpi-value" style="font-size:18px;">{{ lead.phone }}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">등록일</div>
+      <div class="kpi-value" style="font-size:18px;">{{ lead.created_at|date:"Y-m-d H:i" }}</div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:12px;">
+    <div class="panel-head">
+      <div class="panel-title">상태 변경</div>
+    </div>
+    <div style="padding:12px 14px;">
+      <form method="post" class="form-row">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_status">
+        <select class="inputx" name="status">
+          {% for v,t in status_choices %}
+            <option value="{{ v }}" {% if lead.status == v %}selected{% endif %}>{{ t }}</option>
+          {% endfor %}
+        </select>
+        <button class="btnx primary" type="submit">저장</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:12px;">
+    <div class="panel-head">
+      <div class="panel-title">메모 추가</div>
+    </div>
+    <div style="padding:12px 14px;">
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_note">
+        <textarea class="inputx" name="content" rows="4" placeholder="메모를 입력하세요"></textarea>
+        <div style="margin-top:10px;">
+          <button class="btnx primary" type="submit">추가</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:12px;">
+    <div class="panel-head">
+      <div class="panel-title">메모 목록</div>
+    </div>
+    <div class="table-wrap">
+      <table class="tablex">
+        <thead>
+          <tr>
+            <th style="width:170px;">작성일</th>
+            <th>내용</th>
+            <th style="width:140px;">작성자</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for n in lead.notes.all %}
+          <tr>
+            <td>{{ n.created_at|date:"Y-m-d H:i" }}</td>
+            <td>{{ n.content }}</td>
+            <td>{{ n.created_by|default:"-" }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="3" class="muted">메모가 없습니다.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

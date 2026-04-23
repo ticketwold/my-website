@@ -1,0 +1,21 @@
+{% extends "adm/base.html" %}
+{% block title %}게시글 삭제{% endblock %}
+{% block breadcrumbs %}게시판 관리 / 삭제{% endblock %}
+{% block page_title %}게시글 삭제{% endblock %}
+
+{% block content %}
+<div class="cardx" style="max-width:720px;">
+  <p>아래 게시글을 삭제할까요?</p>
+
+  <div style="padding:12px; border:1px solid #e5e7eb; border-radius:12px;">
+    <div><b>제목:</b> {{ obj.title }}</div>
+    <div><b>게시판:</b> {{ obj.get_board_type_display }}</div>
+  </div>
+
+  <form method="post" style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
+    {% csrf_token %}
+    <a class="btnx" href="{% url 'adm_board_list' %}">취소</a>
+    <button class="btnx danger" type="submit">삭제</button>
+  </form>
+</div>
+{% endblock %}

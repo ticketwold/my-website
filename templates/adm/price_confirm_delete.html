@@ -1,0 +1,25 @@
+{% extends "adm/base.html" %}
+{% block title %}시세 삭제{% endblock %}
+{% block breadcrumbs %}시세 관리 / 삭제{% endblock %}
+{% block page_title %}시세 삭제{% endblock %}
+
+{% block content %}
+<div class="cardx" style="max-width:720px;">
+  <div class="text-muted" style="margin-bottom:12px;">
+    아래 시세를 삭제할까요?
+  </div>
+
+  <div style="padding:12px; border:1px solid #e5e7eb; border-radius:12px; background:#fff;">
+    <div><b>구분:</b> {{ obj.get_kind_display }}</div>
+    <div><b>상품권:</b> {{ obj.name }}</div>
+    <div><b>매입:</b> {{ obj.buy_rate }}%</div>
+    <div><b>판매:</b> {{ obj.sell_rate }}%</div>
+  </div>
+
+  <form method="post" style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
+    {% csrf_token %}
+    <a class="btnx" href="{% url 'adm_price_list' %}">취소</a>
+    <button class="btnx danger" type="submit">삭제</button>
+  </form>
+</div>
+{% endblock %}

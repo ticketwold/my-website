@@ -1,0 +1,59 @@
+{% extends "adm/base.html" %}
+{% block title %}환경설정{% endblock %}
+{% block breadcrumbs %}환경설정 / 기본환경설정{% endblock %}
+{% block page_title %}환경설정{% endblock %}
+
+{% block content %}
+<div class="cardx">
+  <div class="tabsx">
+    <a class="{% if active_tab == 'basic' %}active{% endif %}" href="?tab=basic">기본환경</a>
+    <a class="{% if active_tab == 'member' %}active{% endif %}" href="?tab=member">회원관리</a>
+    <a class="{% if active_tab == 'join' %}active{% endif %}" href="?tab=join">가입안내</a>
+    <a class="{% if active_tab == 'sms' %}active{% endif %}" href="?tab=sms">SMS</a>
+  </div>
+
+  {% if active_tab == "basic" %}
+  <div class="formgrid">
+    <label>홈페이지 제목</label>
+    <div class="field"><input placeholder="예: 대출정보 / 상품권거래소"></div>
+
+    <label>고객센터 번호</label>
+    <div class="field"><input placeholder="1670-2962"></div>
+
+    <label>관리자 이메일</label>
+    <div class="field"><input placeholder="web@netpro.co.kr"></div>
+
+    <label>접근허용 IP</label>
+    <div class="field"><textarea rows="4" placeholder="허용 IP를 줄바꿈으로 입력"></textarea></div>
+  </div>
+
+  <div style="margin-top:12px; display:flex; justify-content:flex-end;">
+    <button class="btnx primary">확인</button>
+  </div>
+  {% endif %}
+
+  {% if active_tab == "sms" %}
+  <div class="formgrid">
+    <label>SMS 사용</label>
+    <div class="field">
+      <label style="background:none; border:none; padding:0; font-weight:800;">
+        <input type="radio" name="sms" checked> 사용함
+      </label>
+      <label style="background:none; border:none; padding:0; font-weight:800; margin-left:12px;">
+        <input type="radio" name="sms"> 사용안함
+      </label>
+    </div>
+
+    <label>SMS Key</label>
+    <div class="field"><input placeholder="***********"></div>
+
+    <label>회신번호</label>
+    <div class="field"><input placeholder="1670-2962"></div>
+  </div>
+
+  <div style="margin-top:12px; display:flex; justify-content:flex-end;">
+    <button class="btnx primary">확인</button>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

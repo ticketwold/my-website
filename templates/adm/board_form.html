@@ -1,0 +1,72 @@
+{% extends "site/base_site.html" %}
+{% block content %}
+
+<section class="py-4">
+  <div class="container" style="max-width:900px;">
+
+    <div class="bg-white border shadow-sm p-4">
+
+      <h3 class="fw-bold mb-4">판매글 작성</h3>
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- 제목 -->
+        <div class="mb-3">
+          <label class="form-label fw-bold">제목</label>
+          {{ form.title }}
+        </div>
+
+        <!-- 판매 정보 -->
+        <div class="p-3 mb-4" style="background:#eef4fb; border:1px solid #d9e2ec;">
+          <h5 class="fw-bold mb-3 text-primary">판매 정보</h5>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">상품권 종류</label>
+              {{ form.giftcard_type }}
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">상품권 금액</label>
+              {{ form.face_value }}
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">판매 희망가격</label>
+              {{ form.price }}
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">거래 가능일</label>
+              {{ form.available_date }}
+            </div>
+          </div>
+        </div>
+
+        <!-- 내용 -->
+        <div class="mb-3">
+          <label class="form-label fw-bold">내용</label>
+          {{ form.content }}
+        </div>
+
+        <!-- 이미지 -->
+        <div class="mb-4">
+          <label class="form-label fw-bold">이미지</label>
+          {{ form.image }}
+        </div>
+
+        <!-- 버튼 -->
+        <div class="d-flex justify-content-end gap-2">
+          <a href="{% url 'sell_board_page' %}" class="btn btn-outline-secondary">취소</a>
+          <button type="submit" class="btn btn-dark">등록</button>
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

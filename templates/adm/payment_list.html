@@ -1,0 +1,60 @@
+{% extends "adm/base.html" %}
+{% block title %}결제관리{% endblock %}
+{% block breadcrumbs %}결제관리 / 전체결제내역{% endblock %}
+{% block page_title %}전체결제내역{% endblock %}
+{% load humanize %}
+
+{% block content %}
+<div class="cardx">
+  <form class="toolbar" method="get">
+    <select name="status">
+      <option value="">전체</option>
+      {% for v,t in status_choices %}
+        <option value="{{ v }}" {% if status == v %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+
+    <input name="q" value="{{ q }}" placeholder="회원아이디/이름/연락처/주문번호 검색">
+
+    <button class="btnx primary" type="submit">검색</button>
+    <a class="btnx" href="?">초기화</a>
+  </form>
+
+  <table class="tablex">
+    <thead>
+      <tr>
+        <th style="width:40px;"><input type="checkbox"></th>
+        <th>주문번호</th>
+        <th>이름</th>
+        <th>연락처</th>
+        <th>금액</th>
+        <th>상태</th>
+        <th>등록일</th>
+        <th style="width:90px;">관리</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in payments %}
+      <tr>
+        <td><input type="checkbox"></td>
+        <td class="fw-bold">{{ p.order_no }}</td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.phone }}</td>
+        <td>{{ p.amount|intcomma }}원</td>
+        <td>
+          {% if p.status == "WAIT" %}<span class="badgex wait">대기</span>{% endif %}
+          {% if p.status == "DONE" %}<span class="badgex done">완료</span>{% endif %}
+          {% if p.status == "CANCELED" %}<span class="badgex cancel">취소</span>{% endif %}
+        </td>
+        <td>{{ p.created_at|date:"Y-m-d H:i" }}</td>
+        <td>
+          <a class="btnx" href="{% url 'adm_payment_detail' p.id %}">상세</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8" style="text-align:center; color:#6b7280;">데이터가 없습니다.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

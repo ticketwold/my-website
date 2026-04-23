@@ -1,0 +1,33 @@
+{% extends "adm/base.html" %}
+{% block title %}결제 상세{% endblock %}
+{% block breadcrumbs %}결제관리 / 전체결제내역 / 상세{% endblock %}
+{% block page_title %}결제 상세{% endblock %}
+
+{% block content %}
+<div class="cardx">
+  <div class="formgrid">
+    <label>주문번호</label><div class="field">{{ p.order_no }}</div>
+    <label>이름</label><div class="field">{{ p.name }}</div>
+    <label>연락처</label><div class="field">{{ p.phone }}</div>
+    <label>금액</label><div class="field">{{ p.amount }}원</div>
+    <label>상태</label>
+    <div class="field">
+      {% if p.status == "WAIT" %}<span class="badgex wait">대기</span>{% endif %}
+      {% if p.status == "DONE" %}<span class="badgex done">완료</span>{% endif %}
+      {% if p.status == "CANCELED" %}<span class="badgex cancel">취소</span>{% endif %}
+    </div>
+    <label>메모</label>
+    <div class="field">
+      <form method="post" style="display:flex; flex-direction:column; gap:10px;">
+        {% csrf_token %}
+        <textarea name="memo" rows="4">{{ p.memo }}</textarea>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btnx primary" name="action" value="confirm">입금확인(완료)</button>
+          <button class="btnx" name="action" value="cancel">취소</button>
+          <a class="btnx" href="{% url 'adm_payment_list' %}">목록</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

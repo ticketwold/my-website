@@ -1,0 +1,53 @@
+{% load static %}
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ADMIN{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'adm/css/adm.css' %}">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">ADMIN</div>
+
+    <nav class="nav">
+      <a class="nav-item {% if active_menu == 'dashboard' %}active{% endif %}" href="{% url 'adm_dashboard' %}">대시보드</a>
+      <a class="nav-item {% if active_menu == 'leads' %}active{% endif %}" href="{% url 'adm_lead_list' %}">상담 관리</a>
+      <a class="nav-item {% if active_menu == 'banners' %}active{% endif %}" href="{% url 'adm_banner_list' %}">프리미엄 업체 관리</a>
+      <a class="nav-item {% if active_menu == 'prices' %}active{% endif %}" href="{% url 'adm_price_list' %}">시세 관리</a>
+      <a class="nav-item {% if active_menu == 'companies' %}active{% endif %}" href="{% url 'adm_company_list' %}">등록업체 관리</a>
+      <a class="nav-item {% if active_menu == 'boards' %}active{% endif %}" href="{% url 'adm_board_list' %}">게시판 관리</a>
+      <a class="nav-item {% if active_menu == 'settings' %}active{% endif %}" href="{% url 'adm_settings' %}">환경 설정</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="crumbs">{% block breadcrumbs %}관리자 페이지{% endblock %}</div>
+        <div class="topbar-title">{% block page_title %}{% block topbar_title %}관리자{% endblock %}{% endblock %}</div>
+      </div>
+
+      <div class="topbar-right">
+        <a href="{% url 'site_index' %}" class="btnx">메인으로</a>
+        <a href="{% url 'admin_logout' %}" class="btnx danger">로그아웃</a>
+      </div>
+    </div>
+
+    {% if messages %}
+      <div class="msg-wrap">
+        {% for m in messages %}
+          <div class="msg {{ m.tags }}">{{ m }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="content">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+</div>
+</body>
+</html>

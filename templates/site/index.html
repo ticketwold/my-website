@@ -1,0 +1,367 @@
+{% extends "site/base_site.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}티켓세상{% endblock %}
+
+{% block content %}
+
+<!-- 메인 히어로 -->
+<section class="gm-hero gm-hero--ticket">
+  <div class="gm-hero__slides">
+    <div class="gm-hero__slide gm-hero__slide--1"></div>
+    <div class="gm-hero__slide gm-hero__slide--2"></div>
+    <div class="gm-hero__slide gm-hero__slide--3"></div>
+  </div>
+
+  <div class="gm-hero__overlay"></div>
+
+  <div class="container">
+    <div class="gm-ticket-hero">
+
+      <div class="gm-ticket-hero__left gm-ticket-hero__center">
+        <div class="gm-ticket-hero__eyebrow">상품권 거래 플랫폼, 티켓세상</div>
+
+        <h1 class="hero__title gm-hero-title">
+          상품권 시세조회 판매를,<br>
+          <span>원스톱</span>으로 한번에!
+        </h1>
+
+        <p class="gm-ticket-hero__desc">
+          다양한 상품권 시세와 매입업체를 한 곳에서 만나보세요.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 히어로 아래 작은 배너 자동 슬라이드 -->
+<section class="home-section" id="premium-section">
+  <div class="container">
+    <div class="ts-premium-head">
+      <div class="ts-premium-title">
+        <span class="bar"></span>
+        <h2>프리미엄 업체</h2>
+      </div>
+      <a href="{% url 'shopping_page' %}" class="ts-premium-more">전체보기</a>
+    </div>
+
+    <div class="ts-premium-grid">
+      {% for b in banners %}
+      <div class="ts-premium-card">
+        <div class="ts-premium-card-top">
+          <span class="ts-premium-badge">프리미엄인증</span>
+          <div class="ts-premium-name">{{ b.title }}</div>
+        </div>
+
+        <div class="ts-premium-card-body">
+          <p class="ts-premium-desc">
+            {{ b.desc|default:"상품권 관련 추천 쇼핑몰입니다." }}
+          </p>
+
+          <div class="ts-premium-actions">
+            {% if b.phone %}
+              <a href="tel:{{ b.phone }}" class="ts-premium-btn line">문의하기</a>
+            {% else %}
+              <a href="{{ b.link_url }}" target="_blank" class="ts-premium-btn line">문의하기</a>
+            {% endif %}
+            <a href="{% url 'shopping_detail' b.id %}" class="ts-premium-btn fill">상세정보</a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-box">등록된 추천 쇼핑몰이 없습니다.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="home-section">
+  <div class="container">
+    <div class="section-head">
+      <h2>실시간 티켓 금액</h2>
+      <a href="{% url 'prices_page' %}" class="section-more">전체보기</a>
+    </div>
+
+    <div class="price-grid">
+
+      <!-- 지류(종이) 상품권 시세 -->
+      <div class="price-box">
+        <div class="price-box-title-row">
+          <div class="price-title-left">
+            <span class="price-title-bar"></span>
+            <div class="price-box-title">지류(종이) 상품권 시세</div>
+          </div>
+
+          {% if paper_price_chunks|length > 1 %}
+          <div class="price-dots carousel-indicators">
+            {% for chunk in paper_price_chunks %}
+            <button type="button"
+                    data-bs-target="#paperPriceCarousel"
+                    data-bs-slide-to="{{ forloop.counter0 }}"
+                    class="{% if forloop.first %}active{% endif %}"
+                    {% if forloop.first %}aria-current="true"{% endif %}
+                    aria-label="Slide {{ forloop.counter }}">
+            </button>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="price-sub-info">※ 티켓세상 제공 자료 [{{ today|date:"y. m. d" }}]</div>
+
+        <div id="paperPriceCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3500">
+          <div class="carousel-inner">
+            {% for chunk in paper_price_chunks %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+              <div class="price-table-scroll">
+                <table class="live-price-table">
+                  <thead>
+                    <tr>
+                      <th>상품권</th>
+                      <th>액면가</th>
+                      <th>매입가</th>
+                      <th>판매가</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for price in chunk %}
+                    <tr>
+                      <td>{{ price.name }}</td>
+                      <td>{{ price.face_value|intcomma }}원</td>
+                      <td>{{ price.buy_price|intcomma }}원 <span class="rate">({{ price.buy_rate }}%)</span></td>
+                      <td>{{ price.sell_price|intcomma }}원 <span class="rate">({{ price.sell_rate }}%)</span></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {% empty %}
+            <div class="carousel-item active">
+              <div class="price-table-scroll">
+                <table class="live-price-table">
+                  <tbody>
+                    <tr>
+                      <td colspan="4" class="empty-row">등록된 시세가 없습니다.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+
+          {% if paper_price_chunks|length > 1 %}
+          <div class="price-bottom-nav">
+            <button class="price-page-btn" type="button" data-bs-target="#paperPriceCarousel" data-bs-slide="prev">◀️ 이전</button>
+            <div class="price-page-indicator">
+              <span id="paperCurrentPage">1</span> / {{ paper_price_chunks|length }}
+            </div>
+            <button class="price-page-btn" type="button" data-bs-target="#paperPriceCarousel" data-bs-slide="next">다음 ▶️</button>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- 모바일 상품권 시세 -->
+      <div class="price-box">
+        <div class="price-box-title-row">
+          <div class="price-title-left">
+            <span class="price-title-bar"></span>
+            <div class="price-box-title">모바일 상품권 시세</div>
+          </div>
+          {% if mobile_price_chunks|length > 1 %}
+          <div class="price-dots carousel-indicators">
+            {% for chunk in mobile_price_chunks %}
+            <button type="button"
+                    data-bs-target="#mobilePriceCarousel"
+                    data-bs-slide-to="{{ forloop.counter0 }}"
+                    class="{% if forloop.first %}active{% endif %}"
+                    {% if forloop.first %}aria-current="true"{% endif %}
+                    aria-label="Slide {{ forloop.counter }}">
+            </button>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="price-sub-info">※ 티켓세상 제공 자료 [{{ today|date:"y. m. d" }}]</div>
+
+        <div id="mobilePriceCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3500">
+          <div class="carousel-inner">
+            {% for chunk in mobile_price_chunks %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+              <div class="price-table-scroll">
+                <table class="live-price-table">
+                  <thead>
+                    <tr>
+                      <th>상품권</th>
+                      <th>액면가</th>
+                      <th>매입가</th>
+                      <th>판매가</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for price in chunk %}
+                    <tr>
+                      <td>{{ price.name }}</td>
+                      <td>{{ price.face_value|intcomma }}원</td>
+                      <td>{{ price.buy_price|intcomma }}원 <span class="rate">({{ price.buy_rate }}%)</span></td>
+                      <td>{{ price.sell_price|intcomma }}원 <span class="rate">({{ price.sell_rate }}%)</span></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {% empty %}
+            <div class="carousel-item active">
+              <div class="price-table-scroll">
+                <table class="live-price-table">
+                  <tbody>
+                    <tr>
+                      <td colspan="4" class="empty-row">등록된 시세가 없습니다.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+
+          {% if mobile_price_chunks|length > 1 %}
+          <div class="price-bottom-nav">
+            <button class="price-page-btn" type="button" data-bs-target="#mobilePriceCarousel" data-bs-slide="prev">◀️ 이전</button>
+            <div class="price-page-indicator">
+              <span id="mobileCurrentPage">1</span> / {{ mobile_price_chunks|length }}
+            </div>
+            <button class="price-page-btn" type="button" data-bs-target="#mobilePriceCarousel" data-bs-slide="next">다음 ▶️</button>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  function bindCarouselPage(carouselId, currentId) {
+    const carouselEl = document.querySelector(carouselId);
+    const currentEl = document.querySelector(currentId);
+    if (!carouselEl) return;
+
+    function updatePage() {
+      const items = carouselEl.querySelectorAll(".carousel-item");
+      let currentIndex = 0;
+      items.forEach((item, idx) => {
+        if (item.classList.contains("active")) currentIndex = idx + 1;
+      });
+      if (currentEl) currentEl.textContent = currentIndex;
+    }
+
+    carouselEl.addEventListener("slid.bs.carousel", updatePage);
+    updatePage();
+  }
+
+  bindCarouselPage("#paperPriceCarousel", "#paperCurrentPage");
+  bindCarouselPage("#mobilePriceCarousel", "#mobileCurrentPage");
+});
+</script>
+
+<!-- 거래소 등록 업체 -->
+<section class="home-section">
+  <div class="container">
+    <div class="ts-company-head">
+      <div class="ts-company-title-wrap">
+        <h2 class="ts-company-title">거래소 등록업체</h2>
+
+        <div class="ts-company-tabs">
+          <button type="button" class="ts-company-tab active" data-filter="all">☆ TK인증</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ts-company-grid" id="tsCompanyGrid">
+      {% for company in companies %}
+      <div class="ts-company-card {% if company.is_active %}is-certified{% else %}is-uncertified{% endif %}">
+        <div class="ts-company-card-top">
+          {% if company.is_active %}
+            <span class="ts-company-badge">TK인증</span>
+          {% else %}
+            <span class="ts-company-badge gray">미인증</span>
+          {% endif %}
+
+          <div class="ts-company-name">{{ company.name }}</div>
+        </div>
+
+        <div class="ts-company-card-body">
+          <p class="ts-company-desc">
+            {{ company.desc|default:"상품권 매입 · 판매 전문 업체입니다." }}
+          </p>
+
+          <div class="ts-company-actions">
+            {% if company.phone %}
+              <a href="tel:{{ company.phone }}" class="ts-company-btn line">문의하기</a>
+            {% else %}
+              <a href="{% url 'company_detail' company.id %}" class="ts-company-btn line">문의하기</a>
+            {% endif %}
+            <a href="{% url 'company_detail' company.id %}" class="ts-company-btn fill">상세정보</a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-box">등록된 업체가 없습니다.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const carouselEl = document.getElementById("heroMiniCarousel");
+  if (!carouselEl) return;
+
+  const dotButtons = carouselEl.querySelectorAll(".hero-card-slider__dots button");
+
+  carouselEl.addEventListener("slide.bs.carousel", function (e) {
+    dotButtons.forEach((btn) => btn.classList.remove("active"));
+    if (dotButtons[e.to]) {
+      dotButtons[e.to].classList.add("active");
+    }
+  });
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const tabs = document.querySelectorAll(".ts-company-tab");
+  const cards = document.querySelectorAll(".ts-company-card");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", function () {
+      tabs.forEach(t => t.classList.remove("active"));
+      this.classList.add("active");
+
+      const filter = this.dataset.filter;
+
+      cards.forEach(card => {
+        if (filter === "all") {
+          card.style.display = "";
+        } else if (filter === "inactive") {
+          if (card.classList.contains("is-uncertified")) {
+            card.style.display = "";
+          } else {
+            card.style.display = "none";
+          }
+        }
+      });
+    });
+  });
+});
+</script>
+
+{% endblock %}

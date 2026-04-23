@@ -1,0 +1,64 @@
+{% extends "adm/base.html" %}
+{% block title %}대시보드{% endblock %}
+{% block breadcrumbs %}관리자 페이지{% endblock %}
+{% block page_title %}관리자메인{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">관리자메인</h1>
+      <div class="page-desc">오늘 현황을 한눈에 확인합니다.</div>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">오늘 상담</div>
+      <div class="kpi-value">{{ today_leads }}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">결제 대기</div>
+      <div class="kpi-value">{{ wait_pay }}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">결제 완료</div>
+      <div class="kpi-value">{{ done_pay }}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">총 상담</div>
+      <div class="kpi-value">{{ total_leads }}</div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:12px;">
+    <div class="panel-head">
+      <div class="panel-title">최근 상담 10건</div>
+      <a class="btnx primary" href="{% url 'adm_lead_list' %}">상담신청관리</a>
+    </div>
+
+    <div class="table-wrap">
+      <table class="tablex">
+        <thead>
+          <tr>
+            <th style="width:160px;">시간</th>
+            <th>이름</th>
+            <th style="width:180px;">연락처</th>
+            <th style="width:140px;">상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for l in latest_leads %}
+            <tr>
+              <td>{{ l.created_at|date:"m/d H:i" }}</td>
+              <td>{{ l.name }}</td>
+              <td>{{ l.phone }}</td>
+              <td><span class="badge">{{ l.get_status_display }}</span></td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4" class="muted">데이터가 없습니다.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "adm/base.html" %}
+{% block title %}시세 관리{% endblock %}
+{% block breadcrumbs %}시세 관리{% endblock %}
+{% block page_title %}시세 관리{% endblock %}
+{% load humanize %}
+
+{% block content %}
+<div class="cardx">
+
+  {% if latest_price %}
+  <div class="muted" style="margin-bottom:12px;">
+    마지막 갱신: {{ latest_price.updated_at|date:"Y-m-d H:i:s" }}
+  </div>
+  {% endif %}
+
+  <!-- 상단 툴바 -->
+  <div class="toolbarx" style="display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap;">
+
+    <!-- 검색/필터 영역 -->
+    <form method="get" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:0;">
+      <select name="kind" class="inputx">
+        <option value="">전체</option>
+        {% for v, t in kind_choices %}
+          <option value="{{ v }}" {% if kind == v %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+      </select>
+
+      <select name="active" class="inputx">
+        <option value="">노출 전체</option>
+        <option value="1" {% if active == "1" %}selected{% endif %}>노출</option>
+        <option value="0" {% if active == "0" %}selected{% endif %}>숨김</option>
+      </select>
+
+      <input class="inputx" type="text" name="q" value="{{ q }}" placeholder="상품권 이름 검색" style="min-width:280px;">
+
+      <button class="btnx primary" type="submit">검색</button>
+      <a class="btnx" href="{% url 'adm_price_list' %}">초기화</a>
+    </form>
+
+    <!-- 액션 버튼 영역 -->
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <form method="post" action="{% url 'adm_price_fetch' %}" style="margin:0;">
+        {% csrf_token %}
+        <button type="submit" class="btnx">wooticket 불러오기</button>
+      </form>
+
+      <a class="btnx primary" href="{% url 'adm_price_create' %}">+ 시세 등록</a>
+    </div>
+
+  </div>
+
+  <!-- 테이블 -->
+  <div class="tablewrap" style="margin-top:12px;">
+    <table class="tablex">
+      <thead>
+        <tr>
+          <th style="width:110px;">구분</th>
+          <th>상품권</th>
+          <th style="width:110px; text-align:right;">액면가</th>
+          <th style="width:150px; text-align:right;">매입가</th>
+          <th style="width:150px; text-align:right;">판매가</th>
+          <th style="width:90px; text-align:center;">노출</th>
+          <th style="width:90px; text-align:center;">정렬</th>
+          <th style="width:160px; text-align:center;">관리</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in prices %}
+        <tr>
+          <td>{{ p.get_kind_display }}</td>
+          <td style="font-weight:900;">{{ p.name }}</td>
+          <td style="text-align:right;">{{ p.face_value|intcomma:0 }}원</td>
+          <td style="text-align:right;">{{ p.buy_price|intcomma:0 }}원 ({{ p.buy_rate }}%)</td>
+          <td style="text-align:right;">{{ p.sell_price|intcomma:0 }}원 ({{ p.sell_rate }}%)</td>
+          <td style="text-align:center;">
+            <form method="post" action="{% url 'adm_price_toggle' p.id %}" style="margin:0;">
+              {% csrf_token %}
+              {% if p.is_active %}
+                <button type="submit" class="badgex done" style="border:none; cursor:pointer;">ON</button>
+              {% else %}
+                <button type="submit" class="badgex cancel" style="border:none; cursor:pointer;">OFF</button>
+              {% endif %}
+            </form>
+          </td>
+          <td style="text-align:center;">{{ p.sort }}</td>
+          <td style="text-align:center;">
+            <a class="btnx" href="{% url 'adm_price_update' p.id %}">수정</a>
+            <a class="btnx danger" href="{% url 'adm_price_delete' p.id %}">삭제</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8" class="muted" style="text-align:center; padding:20px;">
+            데이터가 없습니다.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}

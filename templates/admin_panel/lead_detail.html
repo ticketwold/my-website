@@ -1,0 +1,58 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}상담 상세{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-md-5">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <h5 class="mb-3">{{ lead.name }}</h5>
+        <div class="mb-2"><span class="text-muted">연락처</span> <div class="fw-semibold">{{ lead.phone }}</div></div>
+        <div class="mb-2"><span class="text-muted">문의</span><div>{{ lead.memo|default:"-" }}</div></div>
+        <div class="mb-2"><span class="text-muted">유입</span><div class="text-muted">{{ lead.utm_source }} / {{ lead.utm_medium }} / {{ lead.utm_campaign }}</div></div>
+        <div class="mb-2"><span class="text-muted">생성</span><div class="text-muted">{{ lead.created_at }}</div></div>
+
+        <hr />
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="update_status" />
+          <label class="form-label">상태 변경</label>
+          <div class="d-flex gap-2">
+            <select class="form-select" name="status">
+              {% for v, t in status_choices %}
+                <option value="{{ v }}" {% if lead.status == v %}selected{% endif %}>{{ t }}</option>
+              {% endfor %}
+            </select>
+            <button class="btn btn-dark">저장</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-7">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <div class="fw-semibold mb-2">메모</div>
+
+        <form class="mb-3" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="add_note" />
+          <textarea class="form-control mb-2" name="content" rows="3" placeholder="메모 추가"></textarea>
+          <button class="btn btn-outline-dark">추가</button>
+        </form>
+
+        <ul class="list-group">
+          {% for note in lead.notes.all %}
+            <li class="list-group-item">
+              <div class="text-muted small">{{ note.created_at }} · {{ note.created_by|default:"-" }}</div>
+              <div>{{ note.content }}</div>
+            </li>
+          {% empty %}
+            <li class="list-group-item">메모 없음</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

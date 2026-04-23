@@ -1,0 +1,24 @@
+{% extends "adm/base.html" %}
+{% block title %}등록업체 삭제{% endblock %}
+{% block breadcrumbs %}등록업체 관리 / 삭제{% endblock %}
+{% block page_title %}등록업체 삭제{% endblock %}
+
+{% block content %}
+<div class="cardx" style="max-width:720px;">
+  <div class="text-muted" style="margin-bottom:12px;">
+    아래 등록업체를 삭제할까요?
+  </div>
+
+  <div style="padding:12px; border:1px solid #e5e7eb; border-radius:12px; background:#fff;">
+    <div><b>업체명:</b> {{ obj.name }}</div>
+    <div><b>전화번호:</b> {{ obj.phone|default:"-" }}</div>
+    <div><b>홈페이지:</b> {{ obj.link_url|default:"-" }}</div>
+  </div>
+
+  <form method="post" style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
+    {% csrf_token %}
+    <a class="btnx" href="{% url 'adm_company_list' %}">취소</a>
+    <button class="btnx danger" type="submit">삭제</button>
+  </form>
+</div>
+{% endblock %}

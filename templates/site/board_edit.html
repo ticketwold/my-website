@@ -1,0 +1,87 @@
+{% extends "site/base_site.html" %}
+{% block title %}게시글 수정{% endblock %}
+
+{% block content %}
+<section class="py-4">
+  <div class="container" style="max-width:1100px;">
+    <div class="bg-white border shadow-sm p-4 p-md-5 rounded-4">
+      <div class="mb-4">
+        {% if board_type == "sell" %}
+          <h2 class="fw-bold mb-2">상품권 판매게시판 수정</h2>
+          <div class="text-muted">판매 정보를 수정하고 게시글을 업데이트하세요.</div>
+        {% elif board_type == "buy" %}
+          <h2 class="fw-bold mb-2">상품권 구매게시판 수정</h2>
+          <div class="text-muted">구매 정보를 수정하고 게시글을 업데이트하세요.</div>
+        {% endif %}
+      </div>
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">분류</label>
+          {{ form.category }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">제목</label>
+          {{ form.title }}
+        </div>
+
+        <div class="p-4 mb-4 rounded-4" style="background:#f6f9fd; border:1px solid #dbe7f3;">
+          {% if board_type == "sell" %}
+            <h5 class="fw-bold mb-3" style="color:#1d4ed8;">판매 정보</h5>
+          {% elif board_type == "buy" %}
+            <h5 class="fw-bold mb-3" style="color:#1d4ed8;">구매 정보</h5>
+          {% endif %}
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-bold">상품권 종류</label>
+              {{ form.giftcard_type }}
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-bold">상품권 금액</label>
+              {{ form.face_value }}
+            </div>
+
+            <div class="col-md-6">
+              {% if board_type == "sell" %}
+                <label class="form-label fw-bold">판매 희망가격</label>
+              {% else %}
+                <label class="form-label fw-bold">구매 희망가격</label>
+              {% endif %}
+              {{ form.price }}
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-bold">거래 가능일</label>
+              {{ form.available_date }}
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">내용</label>
+          {{ form.content }}
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-bold">이미지</label>
+          {{ form.image }}
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 pt-3 border-top mt-4">
+          {% if board_type == "buy" %}
+            <a href="{% url 'buy_board_page' %}" class="btn btn-outline-secondary px-4">목록</a>
+          {% elif board_type == "sell" %}
+            <a href="{% url 'sell_board_page' %}" class="btn btn-outline-secondary px-4">목록</a>
+          {% endif %}
+          <button type="submit" class="btn btn-dark px-4">수정 완료</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

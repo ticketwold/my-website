@@ -1,0 +1,58 @@
+{% extends "site/base_site.html" %}
+{% block title %}마이페이지{% endblock %}
+
+{% block content %}
+<section class="py-4">
+  <div class="container">
+    <h2 class="fw-bold mb-4">마이페이지</h2>
+
+        <div class="d-flex gap-2 mb-4 flex-wrap">
+            <a href="{% url 'my_inquiries' %}" class="btn btn-outline-dark">문의내역</a>
+            <a href="{% url 'password_change' %}" class="btn btn-outline-dark">비밀번호 변경</a>
+        </div>
+
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="bg-white border rounded-4 p-4 shadow-sm h-100">
+          <h3 class="fw-bold mb-3">즐겨찾기 업체</h3>
+
+          {% if favorites %}
+            <ul class="list-unstyled mb-0">
+                {% for f in favorites %}
+                    <li class="py-2 border-bottom d-flex justify-content-between align-items-center">
+                    <span>{{ f.company.name }}</span>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'company_detail' f.company.id %}" class="btn btn-sm btn-outline-dark">상세보기</a>
+                        <a href="{% url 'toggle_favorite' f.company.id %}" class="btn btn-sm btn-outline-danger">해제</a>
+                    </div>
+                    </li>
+                {% endfor %}
+            </ul>
+          {% else %}
+            <div class="text-muted">즐겨찾기한 업체가 없습니다.</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="bg-white border rounded-4 p-4 shadow-sm h-100">
+          <h3 class="fw-bold mb-3">최근 본 업체</h3>
+
+          {% if recent %}
+            <ul class="list-unstyled mb-0">
+              {% for r in recent %}
+              <li class="py-2 border-bottom d-flex justify-content-between align-items-center">
+                <span>{{ r.company.name }}</span>
+                <a href="{% url 'company_detail' r.company.id %}" class="btn btn-sm btn-outline-dark">상세보기</a>
+              </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <div class="text-muted">최근 본 업체가 없습니다.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
