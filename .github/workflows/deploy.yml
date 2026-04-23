@@ -1,4 +1,4 @@
-name: Deploy to S3
+name: Deploy to EC2
 
 on:
   push:
@@ -8,19 +8,28 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+      - name: Deploy to EC2
+        uses: appleboy/scp-action@master
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "."
+          target: "/home/ubuntu/my-project"
 
-      - name: Deploy to S3
-        run: |
-          aws s3 sync . s3://ticketwold-stie --delete --exclude ".git/*" --exclude ".github/*"
-          
+      - name: Initial Server Setup & Restart
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # 서버에 처음 접속했을 때 필요한 기본 설정들입니다.
+            sudo apt-get update
+            sudo apt-get install -y python3-pip python3-venv
+            cd /home/ubuntu/my-project
+            # 여기에 서버 실행 명령어를 추가할 수 있습니다.
